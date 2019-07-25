@@ -17,13 +17,21 @@
      <div class='col'>
        <div class='col-sm-6 col-12'>
 
+       <!---
        <form method='post'> 
           {% csrf_token %}
-          <input type='text' class='form-control' placeholder='name' name='name' >
+          <input type='text' class='form-control' placeholder='fullname' name='fullname' >
           <input type='email' class='form-control' placeholder='email ' name='email' >
           <input type='textarea' class='form-control' placeholder='message body' name='message' >
           <input type='submit' class=b'tn btn-default' value='Submit'>
+        </form> -->
+
+        <form method='post'> 
+           {% csrf_token %}
+           {{ form }}
+           <button type='submit' class=b'tn btn-default'>Submit</button>
         </form>
+        
        </div>
      </div>
     </div>

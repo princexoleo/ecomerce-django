@@ -11,5 +11,17 @@
         <h2> {{ title }} </h2>
        {% endif %}
   </div>
+
+  {% if request.user.is_authenticated %}
+  <div class= 'container'>
+   <div class='row'> 
+     <div class='col'>
+       <h2> Primium
+       </h1>
+       {{ primium_content }}
+    </div>
+  </div>{% endif %}
+
+  </div>
 {% endblock content %}
   
