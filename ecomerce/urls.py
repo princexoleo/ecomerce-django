@@ -19,6 +19,8 @@ from django.contrib import admin
 from django.urls import path
 from ecomerce import views
 
+from products.views import ProductListView,product_list_view
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.home_page),
@@ -26,6 +28,9 @@ urlpatterns = [
     path('contact/',views.contact_page),
     path('login/',views.login_page),
     path('register/',views.register_page),
+    path('products/',ProductListView.as_view()),
+    path('products_list/',product_list_view),
+    
 ]
 if settings.DEBUG:
     urlpatterns = urlpatterns + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
