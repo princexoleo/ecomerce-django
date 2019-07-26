@@ -19,7 +19,7 @@ from django.contrib import admin
 from django.urls import path
 from ecomerce import views
 
-from products.views import ProductListView,product_list_view
+from products.views import ProductListView,product_list_view,ProductDetailView,product_detail_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,6 +30,8 @@ urlpatterns = [
     path('register/',views.register_page),
     path('products/',ProductListView.as_view()),
     path('products_list/',product_list_view),
+    path('products/<int:pk>/',ProductDetailView.as_view()),
+    path('products_list/<int:pk>/',product_detail_view),
     
 ]
 if settings.DEBUG:
