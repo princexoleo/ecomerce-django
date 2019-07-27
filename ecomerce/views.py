@@ -53,7 +53,7 @@ def login_page(request):
             login(request, user)
             #context['form'] = LoginForm()
             print('Redirect Success Page')
-            return redirect('/')
+            return redirect('home')
         else:
             print('Login Error')
     return render(request, 'auth/login_page.html', context)
@@ -70,5 +70,6 @@ def register_page(request):
         username = form.cleaned_data.get('username')
         email = form.cleaned_data.get('email')
         row_password = form.cleaned_data.get('password')
-        User.objects.create_user()
+        User.objects.create_user(username=username,email=email)
+        return redirect('login')
     return render(request, 'auth/register_page.html', context)
