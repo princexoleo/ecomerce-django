@@ -1,6 +1,6 @@
 from django.views.generic import ListView,DetailView
 from django.shortcuts import render, get_object_or_404
-
+from django.http import Http404
 from .models import Product
 
 # Create your views here.
@@ -39,10 +39,22 @@ class ProductDetailView(DetailView):
 
 #function based listview
 def product_detail_view(request, pk=None,*args, **kwargs):
-    instance = Product.objects.get(pk=pk)
-    instance = get_object_or_404(Product, pk=pk)
+    #instance = Product.objects.get(pk=pk)
+    # instance = get_object_or_404(Product, pk=pk)
     context ={
-        'object': instance
+        'object': ""
     }
+    # try:
+    #     instance = Product.objects.get(id=pk)
+    #     context['object'] = instance
+    # except Product.DoesNotExist:
+    #     print('no product here')
+    #     raise Http404("Product Doesnot Exists")
+    qs = Product.objects.filter(id=pk)
+    if qs.exists() and qs.count() ==1:
+        instance = qs.first()
+        context['object'] = instance
+    else:
+        raise Http404("Product doesn't exists!")
     return render(request,'products/detail.html', context)
 
