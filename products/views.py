@@ -4,7 +4,43 @@ from django.http import Http404
 from .models import Product,ProductManager
 
 # Create your views here.
-# class based view 
+# class based view Featured
+class ProductFeaturedListView(ListView):
+    #queryset = Product.objects.all()
+    template_name = 'products/list.html'
+
+    # def get_context_data(self, *args,**kwargs):
+    #     context = super(ProductListView, self).get_context_data(*args,**kwargs)
+    #     print(context)
+    #     return context
+    def get_queryset(self,*args,**kwargs):
+        request = self.request
+        return Product.objects.featured()
+
+
+# Featured DetailView-class based
+class ProductFeaturedDetailView(DetailView):
+    queryset = Product.objects.featured()
+    template_name = 'products/featured_detail.html'
+
+    # def get_queryset(self,*args,**kwargs):
+    #     request = self.request
+    #     return Product.objects.featured()
+
+
+#function based Product listview
+def product_list_view(request):
+    queryset = Product.objects.all()
+    context ={
+        'object_list': queryset
+    }
+    return render(request,'products/list.html', context)
+
+
+
+
+
+# class based
 class ProductListView(ListView):
     #queryset = Product.objects.all()
     template_name = 'products/list.html'
@@ -27,11 +63,32 @@ def product_list_view(request):
     }
     return render(request,'products/list.html', context)
 
+# slug view of product
+class ProductDetailSlugView(DetailView):
+    queryset = Product.objects.all()
+    template_name = 'products/detail.html'
 
-#DetailView
+
+#DetailView-class based
 class ProductDetailView(DetailView):
     queryset = Product.objects.all()
     template_name = 'products/detail.html'
+
+    # with the help of model Manager
+    def get_object(self, *args, **kwargs):
+        request = self.request
+        slug = self.kwargs.get('slug')
+        #instance = get_object_or_404(Product,slug=slug, active=True)
+        try:
+            instance = Product.objects.get(slug=slug, active=True)
+        except Product.DoesNotExist:
+            raise Http404(" Not Found !")
+        except Product.MultipleObjectsReturned:
+            qs = Product.objects.filter(slug=slug, active=True)
+            instance = instance.first()
+        except:
+            raise Http404("Uhhmm !") 
+        return instance
 
     def get_context_data(self, *args,**kwargs):
         context = super(ProductDetailView, self).get_context_data(*args,**kwargs)

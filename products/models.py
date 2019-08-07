@@ -1,6 +1,8 @@
 import os
 import random
 from django.db import models
+from django.db.models.signals import pre_save,post_save
+from .utils import unique_slug_generator, random_string_generator
 
 # Create your models here.
 def get_filename_ext(filepath):
@@ -21,7 +23,23 @@ def upload_image_path(instance, filename):
          final_filename=final_filename
          )
 
+
+class ProductQuerySet(models.query.QuerySet):
+    def active(self):
+        return self.filter(active=True)
+    def featured(self):
+        return self.filter(featured=True,active=True)
+    
+
 class ProductManager(models.Manager):
+    def get_queryset(self):
+        return ProductQuerySet(self.model, using=self._db)
+    
+    def all_q():
+        return self.get_queryset().active()
+    
+    def featured(self):
+        return self.get_queryset().featured()
     def get_by_id(self, id):
         qs = self.get_queryset().filter(id=id) # Product.objects = self.get_queryset()
         if qs.count() == 1:
@@ -30,9 +48,12 @@ class ProductManager(models.Manager):
 
 class Product(models.Model):
     title       = models.CharField(max_length=50)
+    slug        = models.SlugField(default='abc', blank=True, unique=True)
     description = models.TextField()
     price       = models.DecimalField(max_digits=10, decimal_places=2, default=10.99)
     image       = models.ImageField(upload_to=upload_image_path,null=True, blank=True)
+    featured    = models.BooleanField(default=False)
+    active    = models.BooleanField(default=True)
 
     objects = ProductManager()
 
@@ -40,4 +61,9 @@ class Product(models.Model):
         return self.title
     
 
+def product_pre_save_receiver(sender, instance , *args, **kwargs):
+    if not instance.slug:
+        instance.slug= unique_slug_generator(instance)
+
+pre_save.connect(product_pre_save_receiver, sender=Product)
 
